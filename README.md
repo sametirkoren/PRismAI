@@ -1,10 +1,10 @@
 # PRism AI
 
-AI-powered code review platform for GitHub pull requests using Claude 3.5 Sonnet.
+AI-powered code review platform for GitHub pull requests using Claude 4.5 Sonnet.
 
 ## Features
 
-- 🤖 AI-powered code reviews with Claude 3.5 Sonnet
+- 🤖 AI-powered code reviews with Claude 4.5 Sonnet
 - 🔐 Secure GitHub OAuth authentication
 - 🎯 Specialized review types (Backend, Frontend, Mobile)
 - ⚡ Fast reviews (< 30 seconds)
