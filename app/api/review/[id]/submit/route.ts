@@ -47,7 +47,7 @@ export async function POST(
 
     interface Issue {
       file: string;
-      line: number;
+      lineRange: string;
       issue: string;
       suggestion: string;
     }
@@ -55,7 +55,7 @@ export async function POST(
     if (critical.length > 0) {
       comment += `### 🔴 Critical Issues (${critical.length})\n\n`;
       (critical as Issue[]).forEach((issue, idx) => {
-        comment += `#### ${idx + 1}. \`${issue.file}:${issue.line}\`\n`;
+        comment += `#### ${idx + 1}. \`${issue.file}:${issue.lineRange}\`\n`;
         comment += `**Issue:** ${issue.issue}\n\n`;
         comment += `**Suggestion:**\n\`\`\`\n${issue.suggestion}\n\`\`\`\n\n`;
       });
@@ -64,7 +64,7 @@ export async function POST(
     if (suggestions.length > 0) {
       comment += `### 💡 Suggestions (${suggestions.length})\n\n`;
       (suggestions as Issue[]).forEach((issue, idx) => {
-        comment += `#### ${idx + 1}. \`${issue.file}:${issue.line}\`\n`;
+        comment += `#### ${idx + 1}. \`${issue.file}:${issue.lineRange}\`\n`;
         comment += `**Issue:** ${issue.issue}\n\n`;
         comment += `**Suggestion:**\n\`\`\`\n${issue.suggestion}\n\`\`\`\n\n`;
       });
@@ -73,7 +73,7 @@ export async function POST(
     if (bestPractices.length > 0) {
       comment += `### ✅ Best Practices (${bestPractices.length})\n\n`;
       (bestPractices as Issue[]).forEach((issue, idx) => {
-        comment += `#### ${idx + 1}. \`${issue.file}:${issue.line}\`\n`;
+        comment += `#### ${idx + 1}. \`${issue.file}:${issue.lineRange}\`\n`;
         comment += `**Issue:** ${issue.issue}\n\n`;
         comment += `**Suggestion:**\n\`\`\`\n${issue.suggestion}\n\`\`\`\n\n`;
       });
@@ -138,21 +138,23 @@ export async function POST(
           fileLineToPosition.set(file.filename, lineMap);
         });
 
-        type Issue = { file: string; line: number; issue: string; suggestion: string };
+        type Issue = { file: string; lineRange: string; issue: string; suggestion: string };
         const toComments = (arr: Issue[]) =>
           arr.slice(0, 30).map((it) => {
             const lineMap = fileLineToPosition.get(it.file);
-            const position = lineMap?.get(it.line);
+            // Parse lineRange to get first line (e.g., "92-98" -> 92 or "95" -> 95)
+            const firstLine = parseInt(it.lineRange.split('-')[0]);
+            const position = lineMap?.get(firstLine);
             
             if (!position) {
-              console.log(`[Review] Skipping comment for ${it.file}:${it.line} - line not in diff`);
+              console.log(`[Review] Skipping comment for ${it.file}:${it.lineRange} - line not in diff`);
               return null;
             }
 
             return {
               path: it.file,
               position,
-              body: `**AI Review**\n\n**Issue:** ${it.issue}\n\n**Suggestion:**\n\`\`\`suggestion\n${it.suggestion}\n\`\`\``,
+              body: `**AI Review** (Lines ${it.lineRange})\n\n**Issue:** ${it.issue}\n\n**Suggestion:**\n\`\`\`suggestion\n${it.suggestion}\n\`\`\``,
             };
           }).filter((c): c is NonNullable<typeof c> => c !== null);
 
