@@ -95,7 +95,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedCritical)) {
-      return parsedCritical as { file: string; line: number; issue: string; suggestion: string; severity: "medium" | "high" | "low"; }[];
+      return parsedCritical as { file: string; lineRange: string; issue: string; suggestion: string; severity: "medium" | "high" | "low"; }[];
     }
     return undefined;
   })();
@@ -111,7 +111,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedSuggestions)) {
-      return parsedSuggestions as { file: string; line: number; issue: string; suggestion: string; }[];
+      return parsedSuggestions as { file: string; lineRange: string; issue: string; suggestion: string; }[];
     }
     return undefined;
   })();
@@ -127,7 +127,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedBestPractices)) {
-      return parsedBestPractices as { file: string; line: number; issue: string; suggestion: string; }[];
+      return parsedBestPractices as { file: string; lineRange: string; issue: string; suggestion: string; }[];
     }
     return undefined;
   })();
