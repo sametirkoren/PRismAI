@@ -60,6 +60,7 @@ interface ReviewResultsProps {
   baseBranch?: string;
   prAuthor?: string;
   prAuthorAvatar?: string;
+  headSha?: string;
 }
 
 const translations = {
@@ -124,6 +125,7 @@ export function ReviewResults({
   baseBranch = 'main',
   prAuthor = 'coder_user',
   prAuthorAvatar,
+  headSha,
 }: ReviewResultsProps) {
   const t = translations[userLanguage as keyof typeof translations] || translations.en;
   const [review, setReview] = useState(initialReview);
@@ -144,7 +146,7 @@ export function ReviewResults({
       const response = await fetch("/api/github/code-snippet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ owner, repo, path: file, lineRange }),
+        body: JSON.stringify({ owner, repo, path: file, lineRange, ref: headSha }),
       });
       const snippet = await response.json();
       setCodeSnippets(prev => ({ ...prev, [key]: { ...snippet, lineRange } }));
