@@ -5,18 +5,9 @@ import { Settings, Globe, Code, Save, Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
-interface UserSettings {
-  id: string;
-  language: string;
-  backendPrompt: string | null;
-  frontendPrompt: string | null;
-  mobilePrompt: string | null;
-}
-
 export function SettingsContent() {
   const { language, setLanguage: setContextLanguage, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"general" | "prompts">("general");
-  const [settings, setSettings] = useState<UserSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -36,7 +27,6 @@ export function SettingsContent() {
     try {
       const response = await fetch("/api/settings");
       const data = await response.json();
-      setSettings(data);
       setSelectedLanguage(data.language || "en");
       setBackendPrompt(data.backendPrompt || "");
       setFrontendPrompt(data.frontendPrompt || "");
@@ -73,8 +63,7 @@ export function SettingsContent() {
 
       if (!response.ok) throw new Error("Failed to save settings");
 
-      const data = await response.json();
-      setSettings(data);
+      await response.json();
       setShowSuccess(true);
       
       // Update language context if language was changed

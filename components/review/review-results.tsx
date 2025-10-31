@@ -407,6 +407,7 @@ export function ReviewResults({
           <div className="space-y-2">
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/50">
               {prAuthorAvatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img 
                   src={prAuthorAvatar} 
                   alt={prAuthor}

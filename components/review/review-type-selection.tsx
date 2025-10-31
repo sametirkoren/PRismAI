@@ -113,6 +113,7 @@ export function ReviewTypeSelection({
           <div className="flex items-center justify-center gap-2 text-gray-400">
             <div className="flex items-center gap-2">
               {prDetails.authorAvatar && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={prDetails.authorAvatar}
                   alt={prDetails.author}

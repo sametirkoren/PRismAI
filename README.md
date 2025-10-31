@@ -30,6 +30,27 @@ AI-powered code review platform for GitHub pull requests using Claude 3.5 Sonnet
 - Supabase account
 - Anthropic API key
 
+## 🌐 Live Demo
+
+**Note:** The live demo at the production URL is for showcase purposes only and redirects to this GitHub repository. To use PRism AI, you need to:
+
+1. Clone this repository
+2. Set up your own environment variables
+3. Run it locally or deploy to your own server
+
+This is because PRism AI requires your own:
+- Claude API key (from Anthropic)
+- GitHub OAuth App credentials
+- Supabase/PostgreSQL database
+
+### Testing Production Mode Locally
+
+To test the production homepage (GitHub redirect) locally:
+
+1. Set `NEXT_PUBLIC_SHOW_GITHUB_LINK=true` in `.env.local`
+2. Restart the development server: `npm run dev`
+3. The homepage will show "GitHub'da Görüntüle" button instead of login
+
 ## Setup Instructions
 
 ### Quick Start
