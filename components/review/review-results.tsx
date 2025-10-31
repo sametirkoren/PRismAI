@@ -255,12 +255,12 @@ export function ReviewResults({
     return () => clearInterval(interval);
   }, [review.id, review.status, router]);
 
-  // Auto-expand first 3 items when section changes
+  // Auto-expand all items when section changes
   useEffect(() => {
     if (review.status !== "COMPLETED") return;
     
     const items = activeSection === "critical" ? critical : activeSection === "suggestions" ? suggestions : bestPractices;
-    const toExpand = items.slice(0, 3).map(item => `${item.file}:${item.lineRange}`);
+    const toExpand = items.map(item => `${item.file}:${item.lineRange}`);
     const newExpanded = new Set(toExpand);
     
     toExpand.forEach(key => {
@@ -597,28 +597,28 @@ export function ReviewResults({
                         className="rounded-xl border border-gray-800 bg-[#1a1a1a] overflow-hidden hover:border-gray-700 transition-all"
                       >
                         <div className="p-6 space-y-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 space-y-3">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-1 min-w-0 space-y-3">
                               <button
                                 onClick={() => toggleExpand(item.file, item.lineRange)}
-                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2 break-all"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                {item.file}
-                                <span className="text-gray-500">:{item.lineRange}</span>
+                                <span className="break-all">{item.file}</span>
+                                <span className="text-gray-500 flex-shrink-0">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
-                                <p className="text-base text-white leading-relaxed">{item.issue}</p>
+                                <p className="text-base text-white leading-relaxed break-words">{item.issue}</p>
                                 {item.suggestion && (
                                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
                                     <div className="flex items-start gap-2">
                                       <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                       </svg>
-                                      <p className="text-sm text-gray-300 leading-relaxed">{item.suggestion}</p>
+                                      <p className="text-sm text-gray-300 leading-relaxed break-words">{item.suggestion}</p>
                                     </div>
                                   </div>
                                 )}
@@ -649,7 +649,7 @@ export function ReviewResults({
                             </div>
                             <button 
                               onClick={() => handleDelete("critical", idx)}
-                              className="p-2 hover:bg-red-500/10 rounded transition-colors group"
+                              className="p-2 hover:bg-red-500/10 rounded transition-colors group flex-shrink-0"
                               title={t.delete}
                             >
                               <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-400" />
@@ -703,28 +703,28 @@ export function ReviewResults({
                         className="rounded-xl border border-gray-800 bg-[#1a1a1a] overflow-hidden hover:border-gray-700 transition-all"
                       >
                         <div className="p-6 space-y-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 space-y-3">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-1 min-w-0 space-y-3">
                               <button
                                 onClick={() => toggleExpand(item.file, item.lineRange)}
-                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2 break-all"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                {item.file}
-                                <span className="text-gray-500">:{item.lineRange}</span>
+                                <span className="break-all">{item.file}</span>
+                                <span className="text-gray-500 flex-shrink-0">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
-                                <p className="text-base text-white leading-relaxed">{item.issue}</p>
+                                <p className="text-base text-white leading-relaxed break-words">{item.issue}</p>
                                 {item.suggestion && (
                                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
                                     <div className="flex items-start gap-2">
                                       <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                       </svg>
-                                      <p className="text-sm text-gray-300 leading-relaxed">{item.suggestion}</p>
+                                      <p className="text-sm text-gray-300 leading-relaxed break-words">{item.suggestion}</p>
                                     </div>
                                   </div>
                                 )}
@@ -753,7 +753,7 @@ export function ReviewResults({
                             </div>
                             <button 
                               onClick={() => handleDelete("suggestions", idx)}
-                              className="p-2 hover:bg-yellow-500/10 rounded transition-colors group"
+                              className="p-2 hover:bg-yellow-500/10 rounded transition-colors group flex-shrink-0"
                               title={t.delete}
                             >
                               <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-yellow-400" />
@@ -807,28 +807,28 @@ export function ReviewResults({
                         className="rounded-xl border border-gray-800 bg-[#1a1a1a] overflow-hidden hover:border-gray-700 transition-all"
                       >
                         <div className="p-6 space-y-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 space-y-3">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-1 min-w-0 space-y-3">
                               <button
                                 onClick={() => toggleExpand(item.file, item.lineRange)}
-                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2 break-all"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                {item.file}
-                                <span className="text-gray-500">:{item.lineRange}</span>
+                                <span className="break-all">{item.file}</span>
+                                <span className="text-gray-500 flex-shrink-0">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
-                                <p className="text-base text-white leading-relaxed">{item.issue}</p>
+                                <p className="text-base text-white leading-relaxed break-words">{item.issue}</p>
                                 {item.suggestion && (
                                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
                                     <div className="flex items-start gap-2">
                                       <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                       </svg>
-                                      <p className="text-sm text-gray-300 leading-relaxed">{item.suggestion}</p>
+                                      <p className="text-sm text-gray-300 leading-relaxed break-words">{item.suggestion}</p>
                                     </div>
                                   </div>
                                 )}
@@ -857,7 +857,7 @@ export function ReviewResults({
                             </div>
                             <button 
                               onClick={() => handleDelete("bestPractices", idx)}
-                              className="p-2 hover:bg-green-500/10 rounded transition-colors group"
+                              className="p-2 hover:bg-green-500/10 rounded transition-colors group flex-shrink-0"
                               title={t.delete}
                             >
                               <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-green-400" />
