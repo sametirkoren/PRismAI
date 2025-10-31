@@ -33,7 +33,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           </div>
           <div>
             <h1 className="text-xl font-bold">{t.appName}</h1>
-            <p className="text-xs text-gray-400">Smart Code Reviews</p>
+            <p className="text-xs text-gray-400">{t.smartCodeReviews}</p>
           </div>
         </div>
 
@@ -61,7 +61,14 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               </div>
               <DropdownMenuSeparator className="bg-gray-800" />
               <DropdownMenuItem
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => {
+                  // Logout sırasında localStorage'ı temizle
+                  localStorage.removeItem('setup_supabase');
+                  localStorage.removeItem('setup_claude');
+                  localStorage.removeItem('setup_github');
+                  localStorage.removeItem('setup_synced_to_db');
+                  signOut({ callbackUrl: "/" });
+                }}
                 className="text-red-400 focus:text-red-400 focus:bg-red-950"
               >
                 <LogOut className="w-4 h-4 mr-2" />

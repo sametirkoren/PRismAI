@@ -1,22 +1,38 @@
-import { Github, Code, Sparkles, Zap, Lock, Shield, CheckCircle2, ArrowRight, GitPullRequest, FileCode, Brain, Star } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { signIn, auth } from "@/auth"
-import { redirect } from "next/navigation"
+import {
+  Code,
+  Sparkles,
+  Zap,
+  Lock,
+  Shield,
+  CheckCircle2,
+  ArrowRight,
+  GitPullRequest,
+  FileCode,
+  Brain,
+  Star,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { GitHubLoginButton } from "@/components/home/github-login-button";
 
 export default async function HomePage() {
   const session = await auth();
-  
-  // Giriş yapmış kullanıcıları otomatik dashboard'a yönlendir
+
+  // Giriş yapılmışsa dashboard'a yönlendir
   if (session?.user) {
     redirect("/dashboard");
   }
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-purple-950/10 to-black text-white overflow-hidden">
       {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-600/20 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-600/20 to-transparent rounded-full blur-3xl animate-pulse" style={{animationDelay: "1s"}} />
+        <div
+          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-600/20 to-transparent rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
       </div>
 
       {/* Header */}
@@ -35,10 +51,24 @@ export default async function HomePage() {
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-gray-400 hover:text-white transition-colors">Özellikler</a>
-          <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">Nasıl Çalışır</a>
+          <a
+            href="#features"
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            Özellikler
+          </a>
+          <a
+            href="#how-it-works"
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            Nasıl Çalışır
+          </a>
         </nav>
-        <a href="https://buymeacoffee.com/sametirkoren" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://buymeacoffee.com/sametirkoren"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-purple-500/50">
             ☕ Destek Ol
           </Button>
@@ -58,33 +88,44 @@ export default async function HomePage() {
             Pull Request&apos;lerinizi{" "}
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent animate-gradient">
               Saniyeler İçinde
-            </span>
-            {" "}İnceleyin
+            </span>{" "}
+            İnceleyin
           </h1>
-          
+
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            PRism AI, GitHub pull request&apos;lerinizi otomatik olarak analiz eder, kritik hataları bulur, 
-            iyileştirme önerileri sunar ve en iyi pratikleri paylaşır. Kendi Claude API anahtarınızla kullanın.
+            PRism AI, GitHub pull request&apos;lerinizi otomatik olarak analiz
+            eder, kritik hataları bulur, iyileştirme önerileri sunar ve en iyi
+            pratikleri paylaşır. Kendi Claude API anahtarınızla kullanın.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <form
-              action={async () => {
-                "use server"
-                await signIn("github", { redirectTo: "/dashboard" })
-              }}
-            >
-              <Button size="lg" className="text-lg px-8 py-6 h-auto rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-all">
-                <Github className="mr-2 h-5 w-5" />
-                GitHub ile Başla
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </form>
+            {process.env.NEXT_PUBLIC_SHOW_GITHUB_LINK === 'true' ? (
+              <a
+                href="https://github.com/sametirkoren/prism-ai"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 transition-all hover:scale-105"
+                >
+                  <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  GitHub&apos;da Görüntüle
+                </Button>
+              </a>
+            ) : (
+              <GitHubLoginButton />
+            )}
           </div>
 
           <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-500" />
-            Claude API anahtarı gereklidir • 2 dakikada kurulum
+            {process.env.NEXT_PUBLIC_SHOW_GITHUB_LINK === 'true'
+              ? 'Açık Kaynak • Kendi sunucunuzda çalıştırın'
+              : '1 dakikada kurulum • Kendi API anahtarınızı kullanın'
+            }
           </p>
         </div>
 
@@ -97,7 +138,10 @@ export default async function HomePage() {
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Hızlı İnceleme</h3>
-              <p className="text-gray-400">30 saniye içinde kapsamlı kod incelemesi. Manuel incelemelerden 10x daha hızlı.</p>
+              <p className="text-gray-400">
+                30 saniye içinde kapsamlı kod incelemesi. Manuel incelemelerden
+                10x daha hızlı.
+              </p>
             </div>
           </div>
 
@@ -108,7 +152,10 @@ export default async function HomePage() {
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Akıllı Analiz</h3>
-              <p className="text-gray-400">Backend, Frontend ve Mobile için özelleştirilmiş AI prompts ile derin analiz.</p>
+              <p className="text-gray-400">
+                Backend, Frontend ve Mobile için özelleştirilmiş AI prompts ile
+                derin analiz.
+              </p>
             </div>
           </div>
 
@@ -119,7 +166,10 @@ export default async function HomePage() {
                 <GitPullRequest className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">GitHub Entegrasyonu</h3>
-              <p className="text-gray-400">Direkt PR&apos;lara yorum ekler, etiketler ve review sonuçlarını kaydeder.</p>
+              <p className="text-gray-400">
+                Direkt PR&apos;lara yorum ekler, etiketler ve review sonuçlarını
+                kaydeder.
+              </p>
             </div>
           </div>
         </div>
@@ -130,9 +180,14 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Güçlü Özellikler, <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Basit Kullanım</span>
+              Güçlü Özellikler,{" "}
+              <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Basit Kullanım
+              </span>
             </h2>
-            <p className="text-gray-400 text-lg">PRism AI ile kod kalitesini yükseltmenin her adımı düşünüldü</p>
+            <p className="text-gray-400 text-lg">
+              PRism AI ile kod kalitesini yükseltmenin her adımı düşünüldü
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -144,7 +199,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Üç Tip Review Modu</h3>
-                <p className="text-gray-400 text-sm">Backend, Frontend ve Mobile için özelleştirilmiş inceleme türleri. Her biri alanına özgü en iyi pratikleri kontrol eder.</p>
+                <p className="text-gray-400 text-sm">
+                  Backend, Frontend ve Mobile için özelleştirilmiş inceleme
+                  türleri. Her biri alanına özgü en iyi pratikleri kontrol eder.
+                </p>
               </div>
             </div>
 
@@ -156,7 +214,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Kritik Hata Tespiti</h3>
-                <p className="text-gray-400 text-sm">Güvenlik açıkları, performans sorunları ve logic hataları anında tespit edilir ve severity ile etiketlenir.</p>
+                <p className="text-gray-400 text-sm">
+                  Güvenlik açıkları, performans sorunları ve logic hataları
+                  anında tespit edilir ve severity ile etiketlenir.
+                </p>
               </div>
             </div>
 
@@ -168,7 +229,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Akıllı Öneriler</h3>
-                <p className="text-gray-400 text-sm">Kod organizasyonu, performans optimizasyonları ve daha iyi pattern&apos;ler için actionable öneriler.</p>
+                <p className="text-gray-400 text-sm">
+                  Kod organizasyonu, performans optimizasyonları ve daha iyi
+                  pattern&apos;ler için actionable öneriler.
+                </p>
               </div>
             </div>
 
@@ -180,7 +244,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Best Practices</h3>
-                <p className="text-gray-400 text-sm">Industry standartları, design pattern&apos;ler ve maintainability için rehberlik sağlar.</p>
+                <p className="text-gray-400 text-sm">
+                  Industry standartları, design pattern&apos;ler ve
+                  maintainability için rehberlik sağlar.
+                </p>
               </div>
             </div>
 
@@ -192,7 +259,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Güvenli ve Özel</h3>
-                <p className="text-gray-400 text-sm">Kodunuza sadece okuma erişimi. Verileriniz şifrelenir, kodlar saklanmaz. Tamamen güvenli.</p>
+                <p className="text-gray-400 text-sm">
+                  Kodunuza sadece okuma erişimi. Verileriniz şifrelenir, kodlar
+                  saklanmaz. Tamamen güvenli.
+                </p>
               </div>
             </div>
 
@@ -204,7 +274,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-2">Review Geçmişi</h3>
-                <p className="text-gray-400 text-sm">Tüm incelemeleri kaydet, tekrar ziyaret et ve PR&apos;lar arasında tutarlılık sağla.</p>
+                <p className="text-gray-400 text-sm">
+                  Tüm incelemeleri kaydet, tekrar ziyaret et ve PR&apos;lar
+                  arasında tutarlılık sağla.
+                </p>
               </div>
             </div>
           </div>
@@ -212,10 +285,16 @@ export default async function HomePage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="relative container mx-auto px-6 py-20">
+      <section
+        id="how-it-works"
+        className="relative container mx-auto px-6 py-20"
+      >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            3 Adımda <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">AI Review</span>
+            3 Adımda{" "}
+            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              AI Review
+            </span>
           </h2>
           <p className="text-gray-400 text-lg mb-16">Basit, hızlı ve etkili</p>
 
@@ -225,7 +304,10 @@ export default async function HomePage() {
                 1
               </div>
               <h3 className="text-xl font-bold mb-3">GitHub ile Bağlan</h3>
-              <p className="text-gray-400">GitHub hesabınızla giriş yapın ve Claude API anahtarınızı ayarlara ekleyin.</p>
+              <p className="text-gray-400">
+                GitHub hesabınızla giriş yapın ve Claude API anahtarınızı
+                ayarlara ekleyin.
+              </p>
             </div>
 
             <div className="relative">
@@ -233,7 +315,10 @@ export default async function HomePage() {
                 2
               </div>
               <h3 className="text-xl font-bold mb-3">PR Seç ve İncele</h3>
-              <p className="text-gray-400">Dashboard&apos;dan PR seçin, review tipini belirleyin ve AI&apos;ın analiz etmesini bekleyin.</p>
+              <p className="text-gray-400">
+                Dashboard&apos;dan PR seçin, review tipini belirleyin ve
+                AI&apos;ın analiz etmesini bekleyin.
+              </p>
             </div>
 
             <div className="relative">
@@ -241,22 +326,33 @@ export default async function HomePage() {
                 3
               </div>
               <h3 className="text-xl font-bold mb-3">Sonuçları Gör</h3>
-              <p className="text-gray-400">Detaylı feedback al, düzenle ve direkt GitHub PR&apos;a yorum olarak gönder.</p>
+              <p className="text-gray-400">
+                Detaylı feedback al, düzenle ve direkt GitHub PR&apos;a yorum
+                olarak gönder.
+              </p>
             </div>
           </div>
 
           <div className="mt-16">
-            <form
-              action={async () => {
-                "use server"
-                await signIn("github", { redirectTo: "/dashboard" })
-              }}
-            >
-              <Button size="lg" className="text-lg px-8 py-6 h-auto rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-2xl shadow-purple-500/50">
-                <Github className="mr-2 h-5 w-5" />
-                Şimdi Başlayın
-              </Button>
-            </form>
+            {process.env.NEXT_PUBLIC_SHOW_GITHUB_LINK === 'true' ? (
+              <a
+                href="https://github.com/sametirkoren/prism-ai"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 transition-all hover:scale-105"
+                >
+                  <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  Projeyi İndir ve Çalıştır
+                </Button>
+              </a>
+            ) : (
+              <GitHubLoginButton />
+            )}
           </div>
         </div>
       </section>
@@ -268,9 +364,20 @@ export default async function HomePage() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Kendi API Anahtarınızı Kullanın</h3>
-            <p className="text-gray-400 mb-6">PRism AI, kendi Claude API anahtarınızla çalışır. Anahtarınız güvenli bir şekilde saklanır ve sadece sizin incelemeleriniz için kullanılır. Anthropic Console&apos;dan API anahtarı alabilirsiniz.</p>
-            <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors">
+            <h3 className="text-2xl font-bold mb-2">
+              Kendi API Anahtarınızı Kullanın
+            </h3>
+            <p className="text-gray-400 mb-6">
+              PRism AI, kendi Claude API anahtarınızla çalışır. Anahtarınız
+              güvenli bir şekilde saklanır ve sadece sizin incelemeleriniz için
+              kullanılır. Anthropic Console&apos;dan API anahtarı alabilirsiniz.
+            </p>
+            <a
+              href="https://console.anthropic.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors"
+            >
               <Sparkles className="w-5 h-5" />
               Claude API Anahtarı Al
               <ArrowRight className="w-4 h-4" />
@@ -292,9 +399,26 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-6 text-sm text-gray-400">
-            <a href="https://github.com" className="hover:text-white transition-colors">GitHub</a>
-            <a href="https://www.linkedin.com/in/sametirkoren" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">İletişim</a>
-            <a href="https://buymeacoffee.com/sametirkoren" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
+            <a
+              href="https://github.com/sametirkoren"
+              className="hover:text-white transition-colors"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://sametirkoren.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              İletişim
+            </a>
+            <a
+              href="https://buymeacoffee.com/sametirkoren"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
               ☕ Destek Ol
             </a>
           </div>
@@ -304,5 +428,5 @@ export default async function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

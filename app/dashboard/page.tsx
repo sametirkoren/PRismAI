@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { PRList } from "@/components/dashboard/pr-list";
 import { getUserRepos, getAllPRs } from "@/lib/actions/github";
@@ -12,7 +12,7 @@ interface PageProps {
 }
 
 export default async function DashboardPage({ searchParams }: PageProps) {
-  const session = await auth();
+  const session = await auth()
   
   if (!session?.user) {
     redirect("/");
