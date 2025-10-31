@@ -101,7 +101,7 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             {process.env.NEXT_PUBLIC_SHOW_GITHUB_LINK === 'true' ? (
               <a
-                href="https://github.com/sametirkoren/prism-ai"
+                href="https://github.com/sametirkoren/PRismAI"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -336,7 +336,7 @@ export default async function HomePage() {
           <div className="mt-16">
             {process.env.NEXT_PUBLIC_SHOW_GITHUB_LINK === 'true' ? (
               <a
-                href="https://github.com/sametirkoren/prism-ai"
+                href="https://github.com/sametirkoren/PRismAI"
                 target="_blank"
                 rel="noopener noreferrer"
               >

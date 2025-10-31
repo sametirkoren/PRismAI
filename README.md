@@ -51,6 +51,10 @@ To test the production homepage (GitHub redirect) locally:
 2. Restart the development server: `npm run dev`
 3. The homepage will show "GitHub'da Görüntüle" button instead of login
 
+### Deploy to Vercel
+
+For detailed Vercel deployment instructions, see [VERCEL_SETUP.md](./VERCEL_SETUP.md)
+
 ## Setup Instructions
 
 ### Quick Start
