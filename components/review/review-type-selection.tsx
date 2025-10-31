@@ -43,11 +43,8 @@ export function ReviewTypeSelection({
     {
       type: "BACKEND" as ReviewType,
       icon: Database,
-      title: language === "en" ? "Backend Review" : "Backend İncelemesi",
-      description:
-        language === "en"
-          ? "API performance, database queries, security and code architecture focused analysis."
-          : "API performansı, veritabanı sorguları, güvenlik ve kod mimarisi odaklı analiz.",
+      title: t.backendReview,
+      description: t.backendReviewDesc,
       color: "from-blue-600 to-cyan-600",
       bgColor: "bg-blue-900/20",
       borderColor: "border-blue-600",
@@ -55,11 +52,8 @@ export function ReviewTypeSelection({
     {
       type: "FRONTEND" as ReviewType,
       icon: Monitor,
-      title: language === "en" ? "Frontend Review" : "Frontend İncelemesi",
-      description:
-        language === "en"
-          ? "UI components, accessibility, performance and code repetition analysis."
-          : "Kullanıcı arayüzü bileşenleri, erişilebilirlik, performans ve kod tekrarı analizi.",
+      title: t.frontendReview,
+      description: t.frontendReviewDesc,
       color: "from-purple-600 to-pink-600",
       bgColor: "bg-purple-900/20",
       borderColor: "border-purple-600",
@@ -67,11 +61,8 @@ export function ReviewTypeSelection({
     {
       type: "MOBILE" as ReviewType,
       icon: Smartphone,
-      title: language === "en" ? "Mobile Review" : "Mobil İncelemesi",
-      description:
-        language === "en"
-          ? "Native performance, platform-specific UI rules and state management analysis."
-          : "Native performans, platforma özgü UI kuralları ve state yönetimi analizi.",
+      title: t.mobileReview,
+      description: t.mobileReviewDesc,
       color: "from-green-600 to-emerald-600",
       bgColor: "bg-green-900/20",
       borderColor: "border-green-600",
@@ -113,7 +104,7 @@ export function ReviewTypeSelection({
     <div className="max-w-5xl mx-auto space-y-8">
       <div className="text-center space-y-4">
         <h1 className="text-5xl font-bold">
-          {language === "en" ? "Select Review Type" : "İnceleme Türünü Seçin"}
+          {t.selectReviewType}
         </h1>
         <div className="space-y-3">
           <p className="text-xl text-gray-300">
@@ -129,13 +120,13 @@ export function ReviewTypeSelection({
                 />
               )}
               <span className="text-sm">
-                {language === "en" ? "created by" : "tarafından oluşturuldu"} <span className="text-white font-medium">{prDetails.author}</span>
+                {t.createdBy} <span className="text-white font-medium">{prDetails.author}</span>
               </span>
             </div>
           </div>
           <div className="flex items-center justify-center gap-2 text-sm">
             <GitBranch className="w-4 h-4 text-purple-400" />
-            <span className="text-gray-500">{language === "en" ? "Reviewing changes from" : "İncelenen değişiklikler"}</span>
+            <span className="text-gray-500">{t.reviewingChangesFrom}</span>
             <code className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20 font-mono text-xs">
               {headRef}
             </code>
@@ -197,9 +188,7 @@ export function ReviewTypeSelection({
           disabled={!selectedType || isLoading}
           className="px-8 text-lg"
         >
-          {isLoading 
-            ? (language === "en" ? "Starting Review..." : "İncelemeyi Başlatıyor...") 
-            : (language === "en" ? "Start Review" : "İncelemeyi Başlat")}
+          {isLoading ? t.startingReview : t.startReview}
         </Button>
       </div>
     </div>

@@ -42,7 +42,7 @@ export function Sidebar({ user }: SidebarProps) {
               PRism AI
               <Sparkles className="w-3 h-3 text-purple-400" />
             </h1>
-            <p className="text-gray-400 text-xs">Smart Code Reviews</p>
+            <p className="text-gray-400 text-xs">{t.smartCodeReviews}</p>
           </div>
         </div>
       </div>
@@ -135,13 +135,20 @@ export function Sidebar({ user }: SidebarProps) {
               <p className="text-sm text-white font-medium truncate group-hover:text-purple-300 transition-colors">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-gray-400 truncate">GitHub Profile</p>
+              <p className="text-xs text-gray-400 truncate">{t.githubProfile}</p>
             </div>
           </div>
         </div>
         
         <button
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={() => {
+            // Logout sırasında localStorage'ı temizle
+            localStorage.removeItem('setup_supabase');
+            localStorage.removeItem('setup_claude');
+            localStorage.removeItem('setup_github');
+            localStorage.removeItem('setup_synced_to_db');
+            signOut({ callbackUrl: "/" });
+          }}
           className="flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all text-gray-400 hover:bg-red-500/10 hover:text-red-400 group"
         >
           <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />

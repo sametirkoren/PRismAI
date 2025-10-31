@@ -88,7 +88,7 @@ export function AnalyticsContent() {
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-gray-400">Failed to load analytics data</p>
+        <p className="text-gray-400">{t.failedToLoadAnalytics}</p>
       </div>
     );
   }

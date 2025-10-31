@@ -3,9 +3,13 @@
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { useTranslations } from "@/lib/i18n";
 
 export function TokenExpiredError() {
   const [isClearing, setIsClearing] = useState(true);
+  const { language } = useLanguage();
+  const t = useTranslations(language);
   
   useEffect(() => {
     // Clear the GitHub account and session immediately when component mounts
@@ -31,7 +35,7 @@ export function TokenExpiredError() {
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Clearing session...</p>
+          <p className="text-gray-400">{t.clearingSession}</p>
         </div>
       </div>
     );
@@ -47,9 +51,9 @@ export function TokenExpiredError() {
         </div>
         
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">GitHub Token Expired</h1>
+          <h1 className="text-3xl font-bold">{t.githubTokenExpired}</h1>
           <p className="text-gray-400 text-lg">
-            Your GitHub access token has expired or been revoked.
+            {t.tokenExpiredMessage}
           </p>
         </div>
         

@@ -125,6 +125,36 @@ export const translations = {
     frontend: "Frontend",
     mobile: "Mobile",
     
+    // Review Page
+    selectReviewType: "Select Review Type",
+    reviewingChangesFrom: "Reviewing changes from",
+    createdBy: "created by",
+    startReview: "Start Review",
+    startingReview: "Starting Review...",
+    backendReview: "Backend Review",
+    frontendReview: "Frontend Review",
+    mobileReview: "Mobile Review",
+    backendReviewDesc: "API performance, database queries, security and code architecture focused analysis.",
+    frontendReviewDesc: "UI components, accessibility, performance and code repetition analysis.",
+    mobileReviewDesc: "Native performance, platform-specific UI rules and state management analysis.",
+    errorLoadingPR: "Error Loading PR",
+    couldNotLoadPR: "Could not load pull request details.",
+    
+    // Dashboard
+    smartCodeReviews: "Smart Code Reviews",
+    githubProfile: "GitHub Profile",
+    
+    // Token Error
+    githubTokenExpired: "GitHub Token Expired",
+    tokenExpiredMessage: "Your GitHub access token has expired or been revoked.",
+    clearingSession: "Clearing session...",
+    
+    // Analytics
+    failedToLoadAnalytics: "Failed to load analytics data",
+    
+    // Loading
+    preparingData: "Preparing data",
+    
     // Common
     loading: "Loading...",
     error: "Error",
@@ -259,6 +289,36 @@ export const translations = {
     backend: "Backend",
     frontend: "Frontend",
     mobile: "Mobil",
+    
+    // Review Page
+    selectReviewType: "İnceleme Türünü Seçin",
+    reviewingChangesFrom: "İncelenen değişiklikler",
+    createdBy: "tarafından oluşturuldu",
+    startReview: "İncelemeyi Başlat",
+    startingReview: "İnceleme Başlatılıyor...",
+    backendReview: "Backend İncelemesi",
+    frontendReview: "Frontend İncelemesi",
+    mobileReview: "Mobil İncelemesi",
+    backendReviewDesc: "API performansı, veritabanı sorguları, güvenlik ve kod mimarisi odaklı analiz.",
+    frontendReviewDesc: "Kullanıcı arayüzü bileşenleri, erişilebilirlik, performans ve kod tekrarı analizi.",
+    mobileReviewDesc: "Native performans, platforma özgü UI kuralları ve state yönetimi analizi.",
+    errorLoadingPR: "PR Yüklenirken Hata",
+    couldNotLoadPR: "Pull request detayları yüklenemedi.",
+    
+    // Dashboard
+    smartCodeReviews: "Akıllı Kod İncelemeleri",
+    githubProfile: "GitHub Profili",
+    
+    // Token Error
+    githubTokenExpired: "GitHub Token'ı Süresi Doldu",
+    tokenExpiredMessage: "GitHub erişim token'ınızın süresi doldu veya iptal edildi.",
+    clearingSession: "Oturum temizleniyor...",
+    
+    // Analytics
+    failedToLoadAnalytics: "Analitik verileri yüklenemedi",
+    
+    // Loading
+    preparingData: "Veriler hazırlanıyor",
     
     // Common
     loading: "Yükleniyor...",

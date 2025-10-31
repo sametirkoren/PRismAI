@@ -1,4 +1,11 @@
+"use client";
+
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { useTranslations } from "@/lib/i18n";
+
 export function Loading() {
+  const { language } = useLanguage();
+  const t = useTranslations(language);
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="relative">
@@ -13,8 +20,8 @@ export function Loading() {
           <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
           
           <div className="text-center">
-            <h3 className="text-white text-lg font-semibold mb-2">Yükleniyor...</h3>
-            <p className="text-gray-400 text-sm">Veriler hazırlanıyor</p>
+            <h3 className="text-white text-lg font-semibold mb-2">{t.loading}</h3>
+            <p className="text-gray-400 text-sm">{t.preparingData}</p>
           </div>
           
           {/* Animated dots */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, Globe, Key, Code, Save, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
+import { Settings, Globe, Code, Save, Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
@@ -11,15 +11,11 @@ interface UserSettings {
   backendPrompt: string | null;
   frontendPrompt: string | null;
   mobilePrompt: string | null;
-  hasApiKey: boolean;
-  hasSupabaseUrl: boolean;
-  hasSupabaseAnonKey: boolean;
-  hasSupabaseServiceKey: boolean;
 }
 
 export function SettingsContent() {
   const { language, setLanguage: setContextLanguage, t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"general" | "api" | "prompts">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "prompts">("general");
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,13 +24,6 @@ export function SettingsContent() {
 
   // Form states
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [claudeApiKey, setClaudeApiKey] = useState("");
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [supabaseUrl, setSupabaseUrl] = useState("");
-  const [supabaseAnonKey, setSupabaseAnonKey] = useState("");
-  const [supabaseServiceKey, setSupabaseServiceKey] = useState("");
-  const [showSupabaseAnonKey, setShowSupabaseAnonKey] = useState(false);
-  const [showSupabaseServiceKey, setShowSupabaseServiceKey] = useState(false);
   const [backendPrompt, setBackendPrompt] = useState("");
   const [frontendPrompt, setFrontendPrompt] = useState("");
   const [mobilePrompt, setMobilePrompt] = useState("");
@@ -70,19 +59,6 @@ export function SettingsContent() {
       
       if (activeTab === "general") {
         updateData.language = selectedLanguage;
-      } else if (activeTab === "api") {
-        if (claudeApiKey) {
-          updateData.claudeApiKey = claudeApiKey;
-        }
-        if (supabaseUrl) {
-          updateData.supabaseUrl = supabaseUrl;
-        }
-        if (supabaseAnonKey) {
-          updateData.supabaseAnonKey = supabaseAnonKey;
-        }
-        if (supabaseServiceKey) {
-          updateData.supabaseServiceKey = supabaseServiceKey;
-        }
       } else if (activeTab === "prompts") {
         updateData.backendPrompt = backendPrompt;
         updateData.frontendPrompt = frontendPrompt;
@@ -100,10 +76,6 @@ export function SettingsContent() {
       const data = await response.json();
       setSettings(data);
       setShowSuccess(true);
-      setClaudeApiKey(""); // Clear API key input after save
-      setSupabaseUrl("");
-      setSupabaseAnonKey("");
-      setSupabaseServiceKey("");
       
       // Update language context if language was changed
       if (activeTab === "general" && selectedLanguage !== language) {
@@ -156,18 +128,6 @@ export function SettingsContent() {
           >
             <Globe className="w-4 h-4" />
             {t.general}
-          </button>
-          <button
-            onClick={() => setActiveTab("api")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition",
-              activeTab === "api"
-                ? "border-purple-600 text-white"
-                : "border-transparent text-gray-400 hover:text-white"
-            )}
-          >
-            <Key className="w-4 h-4" />
-            {t.apiKeys}
           </button>
           <button
             onClick={() => setActiveTab("prompts")}
@@ -223,141 +183,6 @@ export function SettingsContent() {
                     </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* API Keys Tab */}
-          {activeTab === "api" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">{t.claudeApiKey}</h2>
-                <p className="text-sm text-gray-400 mb-4">
-                  {t.claudeApiKeyDescription}{" "}
-                  <a
-                    href="https://console.anthropic.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300"
-                  >
-                    {t.anthropicConsole}
-                  </a>
-                </p>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.apiKey} {settings?.hasApiKey && <span className="text-green-400">(✓ {t.configured})</span>}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showApiKey ? "text" : "password"}
-                        value={claudeApiKey}
-                        onChange={(e) => setClaudeApiKey(e.target.value)}
-                        placeholder={settings?.hasApiKey ? "••••••••••••••••••••" : "sk-ant-api03-..."}
-                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowApiKey(!showApiKey)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white"
-                      >
-                        {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-400">
-                      {t.apiKeySecure}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Supabase Configuration */}
-              <div className="pt-6 border-t border-gray-800">
-                <h2 className="text-xl font-semibold mb-2">{t.supabaseConfig || "Supabase Configuration"}</h2>
-                <p className="text-sm text-gray-400 mb-4">
-                  {t.supabaseConfigDescription || "Configure your own Supabase instance to use locally."}{" "}
-                  <a
-                    href="https://supabase.com/dashboard"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300"
-                  >
-                    Supabase Dashboard
-                  </a>
-                </p>
-                
-                <div className="space-y-4">
-                  {/* Supabase URL */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.supabaseUrl || "Supabase URL"} {settings?.hasSupabaseUrl && <span className="text-green-400">(✓ {t.configured})</span>}
-                    </label>
-                    <input
-                      type="text"
-                      value={supabaseUrl}
-                      onChange={(e) => setSupabaseUrl(e.target.value)}
-                      placeholder={settings?.hasSupabaseUrl ? "https://xxxxx.supabase.co" : "https://your-project.supabase.co"}
-                      className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
-                    />
-                  </div>
-
-                  {/* Supabase Anon Key */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.supabaseAnonKey || "Supabase Anon Key"} {settings?.hasSupabaseAnonKey && <span className="text-green-400">(✓ {t.configured})</span>}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showSupabaseAnonKey ? "text" : "password"}
-                        value={supabaseAnonKey}
-                        onChange={(e) => setSupabaseAnonKey(e.target.value)}
-                        placeholder={settings?.hasSupabaseAnonKey ? "••••••••••••••••••••" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowSupabaseAnonKey(!showSupabaseAnonKey)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white"
-                      >
-                        {showSupabaseAnonKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Supabase Service Role Key */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.supabaseServiceKey || "Supabase Service Role Key"} {settings?.hasSupabaseServiceKey && <span className="text-green-400">(✓ {t.configured})</span>}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showSupabaseServiceKey ? "text" : "password"}
-                        value={supabaseServiceKey}
-                        onChange={(e) => setSupabaseServiceKey(e.target.value)}
-                        placeholder={settings?.hasSupabaseServiceKey ? "••••••••••••••••••••" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowSupabaseServiceKey(!showSupabaseServiceKey)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white"
-                      >
-                        {showSupabaseServiceKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-400">
-                      {t.serviceKeyWarning || "⚠️ Keep this key secure. It has admin access to your database."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-lg bg-blue-900/20 border border-blue-800">
-                <h3 className="text-sm font-semibold text-blue-400 mb-2">{t.noteForOpenSource}</h3>
-                <p className="text-sm text-gray-300">
-                  {t.noteDescription}
-                </p>
               </div>
             </div>
           )}

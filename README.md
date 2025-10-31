@@ -32,21 +32,42 @@ AI-powered code review platform for GitHub pull requests using Claude 3.5 Sonnet
 
 ## Setup Instructions
 
-### 1. Install Dependencies
+### Quick Start
 
-```bash
-npm install
-```
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-### 2. Environment Variables
+2. **Configure Environment**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Fill in your `.env.local` with required credentials (see below)
 
-Copy `.env.example` to `.env.local`:
+3. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+   
+   The script will automatically:
+   - ✅ Check database connection
+   - ✅ Run migrations if needed
+   - ✅ Generate Prisma Client
+   - ✅ Start the development server
 
-```bash
-cp .env.example .env.local
-```
+4. **Access Application**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000) and sign in with GitHub
 
-Fill in the **required** values:
+---
+
+### Environment Configuration
+
+#### 1. Environment Variables
+
+Fill in your `.env` file:
 
 ```env
 # App
@@ -57,24 +78,24 @@ NODE_ENV=development
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=<run: openssl rand -base64 32>
 
-# GitHub OAuth (REQUIRED)
+# GitHub OAuth
 AUTH_GITHUB_ID=<your-github-oauth-client-id>
 AUTH_GITHUB_SECRET=<your-github-oauth-client-secret>
 
-# Database (REQUIRED)
-DATABASE_URL=<your-supabase-postgres-connection-string>
-DIRECT_URL=<your-supabase-postgres-direct-connection>
-
-# Claude API & Supabase (Optional - can be configured via Settings page after login)
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
+# Supabase
 NEXT_PUBLIC_SUPABASE_URL=<your-supabase-project-url>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
+
+# Database
+DATABASE_URL=<your-supabase-postgres-connection-string>
+DIRECT_URL=<your-supabase-postgres-direct-connection>
+
+# Claude API
+ANTHROPIC_API_KEY=<your-anthropic-api-key>
 ```
 
-**Note:** Claude API and Supabase credentials can be configured either in `.env.local` OR via the Settings page after logging in. This allows users to use their own API keys without modifying the codebase.
-
-### 3. GitHub OAuth App
+#### 2. GitHub OAuth App
 
 1. Go to [GitHub Settings > Developer Settings > OAuth Apps](https://github.com/settings/developers)
 2. Click "New OAuth App"
@@ -83,44 +104,33 @@ SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
    - **Homepage URL**: `http://localhost:3000`
    - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
 4. Copy the Client ID and generate a Client Secret
-5. Add them to `.env.local`
 
-### 4. Supabase Setup
+#### 3. Supabase Setup
 
 1. Create a new project at [Supabase](https://supabase.com)
 2. Go to Project Settings > Database
-3. Copy the connection strings (both pooled and direct)
-4. Add them to `.env.local`
+3. Copy connection strings:
+   - Transaction mode (for DATABASE_URL)
+   - Session mode (for DIRECT_URL)
+4. Copy API keys from Settings > API
 
-### 5. Anthropic API Key
+#### 4. Anthropic API Key
 
-**Option 1: Environment Variable (Recommended for development)**
 1. Sign up at [Anthropic Console](https://console.anthropic.com)
 2. Generate an API key
-3. Add it to `.env.local`
 
-**Option 2: Via Settings Page (Recommended for open-source usage)**
-1. Sign up at [Anthropic Console](https://console.anthropic.com)
-2. Generate an API key
-3. After logging in, go to Settings → API Keys
-4. Enter your Claude API key
-
-This allows each user to use their own API key without sharing credentials.
-
-### 6. Database Migration
+#### 5. Database Migration
 
 ```bash
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy
 ```
 
-### 7. Run Development Server
+#### 6. Run Development Server
 
 ```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000)
 
 ## Usage
 
@@ -172,13 +182,17 @@ prism-ai/
 ## Scripts
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npx prisma studio    # Open Prisma Studio
-npx prisma generate  # Generate Prisma Client
-npx prisma db push   # Push schema to database
+npm run dev           # Start development server (auto-checks DB)
+npm run dev:watch     # Dev server with auto-restart on .env changes
+npm run build         # Build for production
+npm run start         # Start production server
+npm run lint          # Run ESLint
+
+# Database commands
+npm run db:migrate    # Run database migrations
+npm run db:generate   # Generate Prisma Client
+npm run db:push       # Push schema changes to database
+npm run db:studio     # Open Prisma Studio
 ```
 
 ## Development Status
