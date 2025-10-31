@@ -631,7 +631,10 @@ export function ReviewResults({
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
                                       // Parse lineRange to check if current line is in range
-                                      const [rangeStart, rangeEnd] = snippet.lineRange.split('-').map(n => parseInt(n));
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
                                       const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
                                       
                                       return (
@@ -732,7 +735,10 @@ export function ReviewResults({
                                   <pre className="text-sm font-mono overflow-x-auto">
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
-                                      const [rangeStart, rangeEnd] = snippet.lineRange.split('-').map(n => parseInt(n));
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
                                       const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
                                       
                                       return (
@@ -833,7 +839,10 @@ export function ReviewResults({
                                   <pre className="text-sm font-mono overflow-x-auto">
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
-                                      const [rangeStart, rangeEnd] = snippet.lineRange.split('-').map(n => parseInt(n));
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
                                       const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
                                       
                                       return (
