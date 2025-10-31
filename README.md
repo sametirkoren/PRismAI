@@ -55,6 +55,8 @@ To test the production homepage (GitHub redirect) locally:
 
 For detailed Vercel deployment instructions, see [VERCEL_SETUP.md](./VERCEL_SETUP.md)
 
+**Note:** Prisma Client is automatically generated during deployment via `postinstall` script.
+
 ## Setup Instructions
 
 ### Quick Start

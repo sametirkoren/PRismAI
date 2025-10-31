@@ -73,21 +73,19 @@ Copy the output to `NEXTAUTH_SECRET` in Vercel.
 
 1. Push your code to GitHub
 2. Vercel will automatically deploy
-3. After deployment, run migrations:
+3. Prisma Client will be generated automatically during build (via `postinstall` script)
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login
-vercel login
-
-# Run migrations
-vercel env pull .env.production
-npx prisma migrate deploy --schema=./prisma/schema.prisma
+**Note:** The `package.json` includes:
+```json
+{
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build"
+  }
+}
 ```
 
-Or use Vercel's built-in Prisma integration.
+This ensures Prisma Client is always up-to-date on Vercel.
 
 ## 🎯 Production Modes
 
