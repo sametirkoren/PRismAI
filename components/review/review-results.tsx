@@ -128,7 +128,7 @@ export function ReviewResults({
   const t = translations[userLanguage as keyof typeof translations] || translations.en;
   const [review, setReview] = useState(initialReview);
   const [activeSection, setActiveSection] = useState<"critical" | "suggestions" | "bestPractices">("critical");
-  const [codeSnippets, setCodeSnippets] = useState<Record<string, { code: string; startLine: number; endLine: number; lineRange: string }>>({});
+  const [codeSnippets, setCodeSnippets] = useState<Record<string, { code: string; startLine: number; endLine: number; lineRange: string; rangeStart?: number; rangeEnd?: number }>>({});
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -141,13 +141,10 @@ export function ReviewResults({
     if (codeSnippets[key]) return;
 
     try {
-      // Parse lineRange to get first line number
-      const firstLine = parseInt(lineRange.split('-')[0]);
-      
       const response = await fetch("/api/github/code-snippet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ owner, repo, path: file, line: firstLine }),
+        body: JSON.stringify({ owner, repo, path: file, lineRange }),
       });
       const snippet = await response.json();
       setCodeSnippets(prev => ({ ...prev, [key]: { ...snippet, lineRange } }));
