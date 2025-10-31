@@ -51,13 +51,19 @@ export async function GET() {
       });
     }
 
-    // Don't send API key to client
-    const { claudeApiKey, ...settingsWithoutKey } = settings;
+    // Don't send sensitive keys to client
+    const { claudeApiKey, supabaseAnonKey, supabaseServiceKey, ...settingsWithoutKeys } = settings;
     const hasApiKey = !!claudeApiKey;
+    const hasSupabaseUrl = !!settings.supabaseUrl;
+    const hasSupabaseAnonKey = !!supabaseAnonKey;
+    const hasSupabaseServiceKey = !!supabaseServiceKey;
 
     return NextResponse.json({
-      ...settingsWithoutKey,
+      ...settingsWithoutKeys,
       hasApiKey,
+      hasSupabaseUrl,
+      hasSupabaseAnonKey,
+      hasSupabaseServiceKey,
     });
   } catch (error) {
     console.error("Error fetching settings:", error);
@@ -74,7 +80,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { language, claudeApiKey, backendPrompt, frontendPrompt, mobilePrompt } = body;
+    const { language, claudeApiKey, supabaseUrl, supabaseAnonKey, supabaseServiceKey, backendPrompt, frontendPrompt, mobilePrompt } = body;
 
     // Prepare update data
     const updateData: Record<string, string | null> = {};
@@ -83,10 +89,19 @@ export async function POST(request: Request) {
     if (frontendPrompt !== undefined) updateData.frontendPrompt = frontendPrompt;
     if (mobilePrompt !== undefined) updateData.mobilePrompt = mobilePrompt;
     
-    // Only update API key if provided
+    // Only update API keys if provided
     if (claudeApiKey !== undefined) {
       // In production, encrypt this before storing
       updateData.claudeApiKey = claudeApiKey || null;
+    }
+    if (supabaseUrl !== undefined) {
+      updateData.supabaseUrl = supabaseUrl || null;
+    }
+    if (supabaseAnonKey !== undefined) {
+      updateData.supabaseAnonKey = supabaseAnonKey || null;
+    }
+    if (supabaseServiceKey !== undefined) {
+      updateData.supabaseServiceKey = supabaseServiceKey || null;
     }
 
     const settings = await prisma.userSettings.upsert({
@@ -96,20 +111,29 @@ export async function POST(request: Request) {
         userId: session.user.id,
         language: language || "en",
         claudeApiKey: claudeApiKey || null,
+        supabaseUrl: supabaseUrl || null,
+        supabaseAnonKey: supabaseAnonKey || null,
+        supabaseServiceKey: supabaseServiceKey || null,
         backendPrompt: backendPrompt || DEFAULT_PROMPTS.backend,
         frontendPrompt: frontendPrompt || DEFAULT_PROMPTS.frontend,
         mobilePrompt: mobilePrompt || DEFAULT_PROMPTS.mobile,
       },
     });
 
-    // Don't send API key to client
+    // Don't send sensitive keys to client
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { claudeApiKey: _, ...settingsWithoutKey } = settings;
+    const { claudeApiKey: _, supabaseAnonKey: __, supabaseServiceKey: ___, ...settingsWithoutKeys } = settings;
     const hasApiKey = !!settings.claudeApiKey;
+    const hasSupabaseUrl = !!settings.supabaseUrl;
+    const hasSupabaseAnonKey = !!settings.supabaseAnonKey;
+    const hasSupabaseServiceKey = !!settings.supabaseServiceKey;
 
     return NextResponse.json({
-      ...settingsWithoutKey,
+      ...settingsWithoutKeys,
       hasApiKey,
+      hasSupabaseUrl,
+      hasSupabaseAnonKey,
+      hasSupabaseServiceKey,
     });
   } catch (error) {
     console.error("Error updating settings:", error);

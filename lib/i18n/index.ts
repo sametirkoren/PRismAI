@@ -88,6 +88,12 @@ export const translations = {
     savedSuccessfully: "Settings saved successfully!",
     failedToSave: "Failed to save settings",
     loadingSettings: "Loading settings...",
+    supabaseConfig: "Supabase Configuration",
+    supabaseConfigDescription: "Configure your own Supabase instance to use locally. Get your credentials from",
+    supabaseUrl: "Supabase URL",
+    supabaseAnonKey: "Supabase Anon Key",
+    supabaseServiceKey: "Supabase Service Role Key",
+    serviceKeyWarning: "⚠️ Keep this key secure. It has admin access to your database.",
     
     // Review History
     reviewHistoryTitle: "Review History",
@@ -217,6 +223,12 @@ export const translations = {
     savedSuccessfully: "Ayarlar başarıyla kaydedildi!",
     failedToSave: "Ayarlar kaydedilemedi",
     loadingSettings: "Ayarlar yükleniyor...",
+    supabaseConfig: "Supabase Yapılandırması",
+    supabaseConfigDescription: "Kendi Supabase örneğinizi yerel olarak kullanmak için yapılandırın. Kimlik bilgilerinizi şuradan alabilirsiniz:",
+    supabaseUrl: "Supabase URL",
+    supabaseAnonKey: "Supabase Anon Anahtarı",
+    supabaseServiceKey: "Supabase Service Role Anahtarı",
+    serviceKeyWarning: "⚠️ Bu anahtarı güvende tutun. Veritabanınıza admin erişimi sağlar.",
     
     // Review History
     reviewHistoryTitle: "İnceleme Geçmişi",
