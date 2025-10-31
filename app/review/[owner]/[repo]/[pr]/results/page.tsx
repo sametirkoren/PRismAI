@@ -51,6 +51,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
   const baseBranch = 'main';
   let prAuthor = owner;
   let prAuthorAvatar = undefined;
+  let headSha = undefined;
   
   try {
     const prDetails = await getPRDetails(owner, repo, parseInt(pr));
@@ -59,10 +60,11 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
     if (titleMatch) {
       headBranch = titleMatch[1];
     }
-    // Get author info from PR details
+    // Get author info and head SHA from PR details
     if (prDetails) {
       prAuthor = prDetails.author || owner;
       prAuthorAvatar = prDetails.authorAvatar;
+      headSha = prDetails.headSha;
     }
   } catch (error) {
     console.error("Error fetching PR details:", error);
@@ -95,7 +97,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedCritical)) {
-      return parsedCritical as { file: string; line: number; issue: string; suggestion: string; severity: "medium" | "high" | "low"; }[];
+      return parsedCritical as { file: string; lineRange: string; issue: string; suggestion: string; severity: "medium" | "high" | "low"; }[];
     }
     return undefined;
   })();
@@ -111,7 +113,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedSuggestions)) {
-      return parsedSuggestions as { file: string; line: number; issue: string; suggestion: string; }[];
+      return parsedSuggestions as { file: string; lineRange: string; issue: string; suggestion: string; }[];
     }
     return undefined;
   })();
@@ -127,7 +129,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       }
     }
     if (Array.isArray(parsedBestPractices)) {
-      return parsedBestPractices as { file: string; line: number; issue: string; suggestion: string; }[];
+      return parsedBestPractices as { file: string; lineRange: string; issue: string; suggestion: string; }[];
     }
     return undefined;
   })();
@@ -152,6 +154,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps) {
       baseBranch={baseBranch}
       prAuthor={prAuthor}
       prAuthorAvatar={prAuthorAvatar}
+      headSha={headSha}
     />
   );
 }

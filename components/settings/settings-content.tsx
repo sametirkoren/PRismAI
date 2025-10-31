@@ -12,6 +12,9 @@ interface UserSettings {
   frontendPrompt: string | null;
   mobilePrompt: string | null;
   hasApiKey: boolean;
+  hasSupabaseUrl: boolean;
+  hasSupabaseAnonKey: boolean;
+  hasSupabaseServiceKey: boolean;
 }
 
 export function SettingsContent() {
@@ -27,6 +30,11 @@ export function SettingsContent() {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [claudeApiKey, setClaudeApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [supabaseUrl, setSupabaseUrl] = useState("");
+  const [supabaseAnonKey, setSupabaseAnonKey] = useState("");
+  const [supabaseServiceKey, setSupabaseServiceKey] = useState("");
+  const [showSupabaseAnonKey, setShowSupabaseAnonKey] = useState(false);
+  const [showSupabaseServiceKey, setShowSupabaseServiceKey] = useState(false);
   const [backendPrompt, setBackendPrompt] = useState("");
   const [frontendPrompt, setFrontendPrompt] = useState("");
   const [mobilePrompt, setMobilePrompt] = useState("");
@@ -66,6 +74,15 @@ export function SettingsContent() {
         if (claudeApiKey) {
           updateData.claudeApiKey = claudeApiKey;
         }
+        if (supabaseUrl) {
+          updateData.supabaseUrl = supabaseUrl;
+        }
+        if (supabaseAnonKey) {
+          updateData.supabaseAnonKey = supabaseAnonKey;
+        }
+        if (supabaseServiceKey) {
+          updateData.supabaseServiceKey = supabaseServiceKey;
+        }
       } else if (activeTab === "prompts") {
         updateData.backendPrompt = backendPrompt;
         updateData.frontendPrompt = frontendPrompt;
@@ -84,6 +101,9 @@ export function SettingsContent() {
       setSettings(data);
       setShowSuccess(true);
       setClaudeApiKey(""); // Clear API key input after save
+      setSupabaseUrl("");
+      setSupabaseAnonKey("");
+      setSupabaseServiceKey("");
       
       // Update language context if language was changed
       if (activeTab === "general" && selectedLanguage !== language) {
@@ -247,6 +267,87 @@ export function SettingsContent() {
                     </div>
                     <p className="mt-2 text-sm text-gray-400">
                       {t.apiKeySecure}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Supabase Configuration */}
+              <div className="pt-6 border-t border-gray-800">
+                <h2 className="text-xl font-semibold mb-2">{t.supabaseConfig || "Supabase Configuration"}</h2>
+                <p className="text-sm text-gray-400 mb-4">
+                  {t.supabaseConfigDescription || "Configure your own Supabase instance to use locally."}{" "}
+                  <a
+                    href="https://supabase.com/dashboard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300"
+                  >
+                    Supabase Dashboard
+                  </a>
+                </p>
+                
+                <div className="space-y-4">
+                  {/* Supabase URL */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      {t.supabaseUrl || "Supabase URL"} {settings?.hasSupabaseUrl && <span className="text-green-400">(✓ {t.configured})</span>}
+                    </label>
+                    <input
+                      type="text"
+                      value={supabaseUrl}
+                      onChange={(e) => setSupabaseUrl(e.target.value)}
+                      placeholder={settings?.hasSupabaseUrl ? "https://xxxxx.supabase.co" : "https://your-project.supabase.co"}
+                      className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+                    />
+                  </div>
+
+                  {/* Supabase Anon Key */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      {t.supabaseAnonKey || "Supabase Anon Key"} {settings?.hasSupabaseAnonKey && <span className="text-green-400">(✓ {t.configured})</span>}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showSupabaseAnonKey ? "text" : "password"}
+                        value={supabaseAnonKey}
+                        onChange={(e) => setSupabaseAnonKey(e.target.value)}
+                        placeholder={settings?.hasSupabaseAnonKey ? "••••••••••••••••••••" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSupabaseAnonKey(!showSupabaseAnonKey)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white"
+                      >
+                        {showSupabaseAnonKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Supabase Service Role Key */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      {t.supabaseServiceKey || "Supabase Service Role Key"} {settings?.hasSupabaseServiceKey && <span className="text-green-400">(✓ {t.configured})</span>}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showSupabaseServiceKey ? "text" : "password"}
+                        value={supabaseServiceKey}
+                        onChange={(e) => setSupabaseServiceKey(e.target.value)}
+                        placeholder={settings?.hasSupabaseServiceKey ? "••••••••••••••••••••" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSupabaseServiceKey(!showSupabaseServiceKey)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white"
+                      >
+                        {showSupabaseServiceKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-400">
+                      {t.serviceKeyWarning || "⚠️ Keep this key secure. It has admin access to your database."}
                     </p>
                   </div>
                 </div>

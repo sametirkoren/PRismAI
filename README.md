@@ -46,7 +46,7 @@ Copy `.env.example` to `.env.local`:
 cp .env.example .env.local
 ```
 
-Fill in the required values:
+Fill in the **required** values:
 
 ```env
 # App
@@ -57,22 +57,22 @@ NODE_ENV=development
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=<run: openssl rand -base64 32>
 
-# GitHub OAuth
+# GitHub OAuth (REQUIRED)
 AUTH_GITHUB_ID=<your-github-oauth-client-id>
 AUTH_GITHUB_SECRET=<your-github-oauth-client-secret>
 
-# Claude API
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
+# Database (REQUIRED)
+DATABASE_URL=<your-supabase-postgres-connection-string>
+DIRECT_URL=<your-supabase-postgres-direct-connection>
 
-# Supabase
+# Claude API & Supabase (Optional - can be configured via Settings page after login)
+ANTHROPIC_API_KEY=<your-anthropic-api-key>
 NEXT_PUBLIC_SUPABASE_URL=<your-supabase-project-url>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
-
-# Database
-DATABASE_URL=<your-supabase-postgres-connection-string>
-DIRECT_URL=<your-supabase-postgres-direct-connection>
 ```
+
+**Note:** Claude API and Supabase credentials can be configured either in `.env.local` OR via the Settings page after logging in. This allows users to use their own API keys without modifying the codebase.
 
 ### 3. GitHub OAuth App
 
@@ -94,9 +94,18 @@ DIRECT_URL=<your-supabase-postgres-direct-connection>
 
 ### 5. Anthropic API Key
 
+**Option 1: Environment Variable (Recommended for development)**
 1. Sign up at [Anthropic Console](https://console.anthropic.com)
 2. Generate an API key
 3. Add it to `.env.local`
+
+**Option 2: Via Settings Page (Recommended for open-source usage)**
+1. Sign up at [Anthropic Console](https://console.anthropic.com)
+2. Generate an API key
+3. After logging in, go to Settings → API Keys
+4. Enter your Claude API key
+
+This allows each user to use their own API key without sharing credentials.
 
 ### 6. Database Migration
 

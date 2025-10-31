@@ -76,7 +76,7 @@ interface PRDetails {
 interface ReviewResult {
   critical: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     severity: "high" | "medium" | "low";
@@ -84,14 +84,14 @@ interface ReviewResult {
   }>;
   suggestions: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     labels: string[];
   }>;
   bestPractices: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     labels: string[];
@@ -142,20 +142,57 @@ export async function reviewCodeWithClaude(
       }
     }
 
-    // Diff içeriğini daha iyi yapılandır
+    // Parse diff to extract actual line numbers
+    const parseDiffLineNumbers = (patch: string) => {
+      const lines = patch.split('\n');
+      const lineInfo: Array<{lineNum: number, content: string, type: 'add' | 'remove' | 'context'}> = [];
+      let currentLine = 0;
+      
+      for (const line of lines) {
+        // Parse @@ header to get starting line number
+        const headerMatch = line.match(/^@@\s+-\d+,?\d*\s+\+(\d+),?\d*\s+@@/);
+        if (headerMatch) {
+          currentLine = parseInt(headerMatch[1]);
+          continue;
+        }
+        
+        if (line.startsWith('+')) {
+          lineInfo.push({ lineNum: currentLine, content: line.substring(1), type: 'add' });
+          currentLine++;
+        } else if (line.startsWith('-')) {
+          lineInfo.push({ lineNum: currentLine, content: line.substring(1), type: 'remove' });
+          // Don't increment for deletions
+        } else if (line.startsWith(' ')) {
+          lineInfo.push({ lineNum: currentLine, content: line.substring(1), type: 'context' });
+          currentLine++;
+        }
+      }
+      
+      return lineInfo;
+    };
+
+    // Diff içeriğini satır numaralarıyla zenginleştir
     const codeContent = prDetails.files
       .filter((file) => file.patch)
       .map((file) => {
         const fileExtension = file.filename.split('.').pop();
+        const lineInfo = parseDiffLineNumbers(file.patch || '');
+        
+        // Format with line numbers
+        let formattedDiff = '';
+        lineInfo.forEach((info) => {
+          const prefix = info.type === 'add' ? '+' : info.type === 'remove' ? '-' : ' ';
+          formattedDiff += `${info.lineNum.toString().padStart(4, ' ')} ${prefix} ${info.content}\n`;
+        });
+        
         return `
 === DOSYA: ${file.filename} ===
 Durum: ${file.status}
 Değişiklik: +${file.additions} -${file.deletions}
 Dil: ${fileExtension}
 
-DIFF (Yeni değişiklikler "+" ile başlar):
-${file.patch}
-
+DIFF (Satır numaraları ile, "+" = yeni eklenen):
+${formattedDiff}
 ---
 `;
       })
@@ -183,10 +220,10 @@ ${file.patch}
                 items: {
                   type: "object",
                   properties: {
-                    file: { type: "string" },
-                    line: { type: "number" },
-                    issue: { type: "string" },
-                    suggestion: { type: "string" },
+                    file: { type: "string", description: "Dosya yolu" },
+                    lineRange: { type: "string", description: "Satır aralığı, örn: '92-98' veya tek satır için '95'" },
+                    issue: { type: "string", description: "Sorunun açıklaması" },
+                    suggestion: { type: "string", description: "Çözüm önerisi" },
                     severity: { 
                       type: "string", 
                       enum: ["high", "medium", "low"] 
@@ -196,7 +233,7 @@ ${file.patch}
                       items: { type: "string" } 
                     },
                   },
-                  required: ["file", "line", "issue", "suggestion", "severity", "labels"],
+                  required: ["file", "lineRange", "issue", "suggestion", "severity", "labels"],
                 },
               },
               suggestions: {
@@ -204,13 +241,13 @@ ${file.patch}
                 items: {
                   type: "object",
                   properties: {
-                    file: { type: "string" },
-                    line: { type: "number" },
-                    issue: { type: "string" },
-                    suggestion: { type: "string" },
+                    file: { type: "string", description: "Dosya yolu" },
+                    lineRange: { type: "string", description: "Satır aralığı, örn: '92-98' veya tek satır için '95'" },
+                    issue: { type: "string", description: "Sorunun açıklaması" },
+                    suggestion: { type: "string", description: "Çözüm önerisi" },
                     labels: { type: "array", items: { type: "string" } },
                   },
-                  required: ["file", "line", "issue", "suggestion", "labels"],
+                  required: ["file", "lineRange", "issue", "suggestion", "labels"],
                 },
               },
               bestPractices: {
@@ -218,13 +255,13 @@ ${file.patch}
                 items: {
                   type: "object",
                   properties: {
-                    file: { type: "string" },
-                    line: { type: "number" },
-                    issue: { type: "string" },
-                    suggestion: { type: "string" },
+                    file: { type: "string", description: "Dosya yolu" },
+                    lineRange: { type: "string", description: "Satır aralığı, örn: '92-98' veya tek satır için '95'" },
+                    issue: { type: "string", description: "Sorunun açıklaması" },
+                    suggestion: { type: "string", description: "Çözüm önerisi" },
                     labels: { type: "array", items: { type: "string" } },
                   },
-                  required: ["file", "line", "issue", "suggestion", "labels"],
+                  required: ["file", "lineRange", "issue", "suggestion", "labels"],
                 },
               },
             },
@@ -244,10 +281,12 @@ PR Açıklaması: ${prDetails.body || "Açıklama yok"}
 Değişiklikler:
 ${codeContent}
 
-HATIRLATMA:
-- "+" ile başlayan satırlar ZATEN EKLENMIŞ
+ÖNEMLI NOTLAR:
+- Her satırın başında GERÇEK satır numarası gösteriliyor
+- "+" ile başlayan satırlar ZATEN EKLENMIŞ yeni kod
 - Sadece gerçek sorunları ve iyileştirme fırsatlarını raporla
-- Her bulgu için spesifik dosya adı ve satır numarası ver
+- 'lineRange' alanına sorunun olduğu satır aralığını yaz (örn: "92-98" veya tek satır için "95")
+- Diff'te gösterilen satır numaralarını kullan
 - Boş array döndürmekte sakınca yok
 
 Label önerileri:

@@ -32,9 +32,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { owner, repo, path, line, ref } = await req.json();
+    const { owner, repo, path, lineRange, ref } = await req.json();
 
-    if (!owner || !repo || !path || !line) {
+    if (!owner || !repo || !path || !lineRange) {
       return NextResponse.json(
         { error: "Missing required parameters" },
         { status: 400 }
@@ -62,16 +62,21 @@ export async function POST(req: NextRequest) {
     const content = Buffer.from(data.content, "base64").toString("utf-8");
     const lines = content.split("\n");
 
-    // Get 3 lines before and after the target line
-    const targetLine = parseInt(line.toString());
-    const startLine = Math.max(0, targetLine - 4);
-    const endLine = Math.min(lines.length - 1, targetLine + 2);
+    // Parse lineRange (e.g., "146-149" or "95")
+    const rangeParts = lineRange.split('-');
+    const rangeStart = parseInt(rangeParts[0]);
+    const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1]) : rangeStart;
+
+    // Get context: 3 lines before and after the range
+    const startLine = Math.max(0, rangeStart - 4);
+    const endLine = Math.min(lines.length - 1, rangeEnd + 2);
 
     const snippet = {
       code: lines.slice(startLine, endLine + 1).join("\n"),
       startLine: startLine + 1,
       endLine: endLine + 1,
-      targetLine,
+      rangeStart,
+      rangeEnd,
     };
 
     return NextResponse.json(snippet);

@@ -100,6 +100,9 @@ model UserSettings {
   userId                String   @unique
   language              String   @default("en") // "en" or "tr"
   claudeApiKey          String?  @db.Text // Encrypted
+  supabaseUrl           String?  @db.Text
+  supabaseAnonKey       String?  @db.Text
+  supabaseServiceKey    String?  @db.Text
   backendPrompt         String?  @db.Text
   frontendPrompt        String?  @db.Text
   mobilePrompt          String?  @db.Text

@@ -16,7 +16,7 @@ interface Review {
   linesRemoved: number;
   critical?: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     severity: "high" | "medium" | "low";
@@ -24,14 +24,14 @@ interface Review {
   }>;
   suggestions?: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     labels?: string[];
   }>;
   bestPractices?: Array<{
     file: string;
-    line: number;
+    lineRange: string;
     issue: string;
     suggestion: string;
     labels?: string[];
@@ -60,6 +60,7 @@ interface ReviewResultsProps {
   baseBranch?: string;
   prAuthor?: string;
   prAuthorAvatar?: string;
+  headSha?: string;
 }
 
 const translations = {
@@ -124,11 +125,12 @@ export function ReviewResults({
   baseBranch = 'main',
   prAuthor = 'coder_user',
   prAuthorAvatar,
+  headSha,
 }: ReviewResultsProps) {
   const t = translations[userLanguage as keyof typeof translations] || translations.en;
   const [review, setReview] = useState(initialReview);
   const [activeSection, setActiveSection] = useState<"critical" | "suggestions" | "bestPractices">("critical");
-  const [codeSnippets, setCodeSnippets] = useState<Record<string, { code: string; startLine: number; endLine: number; targetLine: number }>>({});
+  const [codeSnippets, setCodeSnippets] = useState<Record<string, { code: string; startLine: number; endLine: number; lineRange: string; rangeStart?: number; rangeEnd?: number }>>({});
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -136,31 +138,31 @@ export function ReviewResults({
   const [reviewHistory, setReviewHistory] = useState<Review[]>([]);
   const router = useRouter();
 
-  const fetchCodeSnippet = async (file: string, line: number) => {
-    const key = `${file}:${line}`;
+  const fetchCodeSnippet = async (file: string, lineRange: string) => {
+    const key = `${file}:${lineRange}`;
     if (codeSnippets[key]) return;
 
     try {
       const response = await fetch("/api/github/code-snippet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ owner, repo, path: file, line }),
+        body: JSON.stringify({ owner, repo, path: file, lineRange, ref: headSha }),
       });
       const snippet = await response.json();
-      setCodeSnippets(prev => ({ ...prev, [key]: snippet }));
+      setCodeSnippets(prev => ({ ...prev, [key]: { ...snippet, lineRange } }));
     } catch (error) {
       console.error("Error fetching code snippet:", error);
     }
   };
 
-  const toggleExpand = (file: string, line: number) => {
-    const key = `${file}:${line}`;
+  const toggleExpand = (file: string, lineRange: string) => {
+    const key = `${file}:${lineRange}`;
     const newExpanded = new Set(expandedItems);
     if (newExpanded.has(key)) {
       newExpanded.delete(key);
     } else {
       newExpanded.add(key);
-      fetchCodeSnippet(file, line);
+      fetchCodeSnippet(file, lineRange);
     }
     setExpandedItems(newExpanded);
   };
@@ -258,13 +260,13 @@ export function ReviewResults({
     if (review.status !== "COMPLETED") return;
     
     const items = activeSection === "critical" ? critical : activeSection === "suggestions" ? suggestions : bestPractices;
-    const toExpand = items.slice(0, 3).map(item => `${item.file}:${item.line}`);
+    const toExpand = items.slice(0, 3).map(item => `${item.file}:${item.lineRange}`);
     const newExpanded = new Set(toExpand);
     
     toExpand.forEach(key => {
       if (!codeSnippets[key]) {
-        const [file, line] = key.split(":");
-        fetchCodeSnippet(file, parseInt(line));
+        const [file, lineRange] = key.split(':');
+        fetchCodeSnippet(file, lineRange);
       }
     });
     
@@ -585,7 +587,7 @@ export function ReviewResults({
               {critical.length > 0 ? (
                 <div className="space-y-4">
                   {critical.map((item, idx) => {
-                    const key = `${item.file}:${item.line}`;
+                    const key = `${item.file}:${item.lineRange}`;
                     const isExpanded = expandedItems.has(key);
                     const snippet = codeSnippets[key];
                     
@@ -598,10 +600,14 @@ export function ReviewResults({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 space-y-3">
                               <button
-                                onClick={() => toggleExpand(item.file, item.line)}
-                                className="font-mono text-sm text-gray-400 hover:text-gray-300 transition-colors"
+                                onClick={() => toggleExpand(item.file, item.lineRange)}
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
                               >
-                                {item.file}:{item.line}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                {item.file}
+                                <span className="text-gray-500">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
@@ -623,11 +629,17 @@ export function ReviewResults({
                                   <pre className="text-sm font-mono overflow-x-auto">
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
-                                      const isTarget = lineNum === snippet.targetLine;
+                                      // Parse lineRange to check if current line is in range
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
+                                      const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
+                                      
                                       return (
-                                        <div key={i} className={`py-0.5 ${isTarget ? "bg-red-900/20" : ""}`}>
+                                        <div key={i} className={`py-0.5 ${isInRange ? "bg-red-900/20" : ""}`}>
                                           <span className="inline-block w-12 text-gray-600 select-none text-right mr-4">{lineNum}</span>
-                                          <span className={isTarget ? "text-red-400" : "text-gray-400"}>{line}</span>
+                                          <span className={isInRange ? "text-red-400" : "text-gray-400"}>{line}</span>
                                         </div>
                                       );
                                     })}
@@ -681,7 +693,7 @@ export function ReviewResults({
               {suggestions.length > 0 ? (
                 <div className="space-y-4">
                   {suggestions.map((item, idx) => {
-                    const key = `${item.file}:${item.line}`;
+                    const key = `${item.file}:${item.lineRange}`;
                     const isExpanded = expandedItems.has(key);
                     const snippet = codeSnippets[key];
                     
@@ -694,10 +706,14 @@ export function ReviewResults({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 space-y-3">
                               <button
-                                onClick={() => toggleExpand(item.file, item.line)}
-                                className="font-mono text-sm text-gray-400 hover:text-gray-300 transition-colors"
+                                onClick={() => toggleExpand(item.file, item.lineRange)}
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
                               >
-                                {item.file}:{item.line}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                {item.file}
+                                <span className="text-gray-500">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
@@ -718,11 +734,16 @@ export function ReviewResults({
                                   <pre className="text-sm font-mono overflow-x-auto">
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
-                                      const isTarget = lineNum === snippet.targetLine;
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
+                                      const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
+                                      
                                       return (
-                                        <div key={i} className={`py-0.5 ${isTarget ? "bg-yellow-900/20" : ""}`}>
+                                        <div key={i} className={`py-0.5 ${isInRange ? "bg-yellow-900/20" : ""}`}>
                                           <span className="inline-block w-12 text-gray-600 select-none text-right mr-4">{lineNum}</span>
-                                          <span className={isTarget ? "text-yellow-400" : "text-gray-400"}>{line}</span>
+                                          <span className={isInRange ? "text-yellow-400" : "text-gray-400"}>{line}</span>
                                         </div>
                                       );
                                     })}
@@ -776,7 +797,7 @@ export function ReviewResults({
               {bestPractices.length > 0 ? (
                 <div className="space-y-4">
                   {bestPractices.map((item, idx) => {
-                    const key = `${item.file}:${item.line}`;
+                    const key = `${item.file}:${item.lineRange}`;
                     const isExpanded = expandedItems.has(key);
                     const snippet = codeSnippets[key];
                     
@@ -789,10 +810,14 @@ export function ReviewResults({
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 space-y-3">
                               <button
-                                onClick={() => toggleExpand(item.file, item.line)}
-                                className="font-mono text-sm text-gray-400 hover:text-gray-300 transition-colors"
+                                onClick={() => toggleExpand(item.file, item.lineRange)}
+                                className="font-mono text-sm text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
                               >
-                                {item.file}:{item.line}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                {item.file}
+                                <span className="text-gray-500">:{item.lineRange}</span>
                               </button>
                               
                               <div className="space-y-2">
@@ -813,11 +838,16 @@ export function ReviewResults({
                                   <pre className="text-sm font-mono overflow-x-auto">
                                     {snippet.code.split("\n").map((line: string, i: number) => {
                                       const lineNum = snippet.startLine + i;
-                                      const isTarget = lineNum === snippet.targetLine;
+                                      const rangeStr = snippet.lineRange || '';
+                                      const rangeParts = rangeStr.split('-').filter(p => p);
+                                      const rangeStart = parseInt(rangeParts[0] || '0');
+                                      const rangeEnd = rangeParts.length > 1 ? parseInt(rangeParts[1] || '0') : null;
+                                      const isInRange = rangeEnd ? (lineNum >= rangeStart && lineNum <= rangeEnd) : lineNum === rangeStart;
+                                      
                                       return (
-                                        <div key={i} className={`py-0.5 ${isTarget ? "bg-green-900/20" : ""}`}>
+                                        <div key={i} className={`py-0.5 ${isInRange ? "bg-green-900/20" : ""}`}>
                                           <span className="inline-block w-12 text-gray-600 select-none text-right mr-4">{lineNum}</span>
-                                          <span className={isTarget ? "text-green-400" : "text-gray-400"}>{line}</span>
+                                          <span className={isInRange ? "text-green-400" : "text-gray-400"}>{line}</span>
                                         </div>
                                       );
                                     })}

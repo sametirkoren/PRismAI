@@ -34,16 +34,22 @@ Add this to `NEXTAUTH_SECRET` in `.env.local`
 1. Go to: https://supabase.com/dashboard
 2. Create new project
 3. Go to Settings > Database
-4. Copy **Connection Pooling** string → `DATABASE_URL`
-5. Copy **Direct Connection** string → `DIRECT_URL`
+4. Copy **Connection Pooling** string → `DATABASE_URL` (REQUIRED in `.env.local`)
+5. Copy **Direct Connection** string → `DIRECT_URL` (REQUIRED in `.env.local`)
 6. Go to Settings > API
-7. Copy **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-8. Copy **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-9. Copy **service_role** key → `SUPABASE_SERVICE_ROLE_KEY`
+7. Copy **Project URL**, **anon public** key, and **service_role** key
+   - **Option A**: Add to `.env.local` as `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+   - **Option B**: After login, go to Settings → API Keys and enter them there (recommended for open-source usage)
 
 ### Anthropic API (Required for AI reviews)
+**Option 1: Environment Variable**
 1. Go to: https://console.anthropic.com
 2. Get API key → `ANTHROPIC_API_KEY`
+
+**Option 2: Settings Page (Recommended)**
+1. Skip adding to `.env.local`
+2. After login, go to Settings → API Keys
+3. Enter your Claude API key there
 
 ## 2. Initialize Database
 
